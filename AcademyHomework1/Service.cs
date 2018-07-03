@@ -92,11 +92,17 @@ namespace AcademyHomework1
             }
         }
 
-        public Dictionary<Post, int> GetNumberOfCommentsById(int id)
+        private IEnumerable<Post> GetPostsById(int id)
         {
             var posts = (from u in _users
                          where u.Id == id
                          select u.Posts).First();
+            return posts;
+        }
+
+        public Dictionary<Post, int> GetNumberOfCommentsById(int id)
+        {
+            var posts = GetPostsById(id);
 
             var postsWithNumber = from p in posts
                                   select new
@@ -110,7 +116,23 @@ namespace AcademyHomework1
                 res[p.Post] = p.Number;
             }
             return res;
+        }
 
+        public List<Comment> GetCommentsWithBigBodyById(int id)
+        {
+            var posts = GetPostsById(id);
+
+            List<Comment> allComments = new List<Comment>();
+
+            foreach(var post in posts)
+            {
+                allComments.AddRange(post.Comments);
+            }
+
+            var smallComments = allComments.Where(c => c.Body.Length < 50);
+            return smallComments.ToList();
+
+                               
         }
     }
 }

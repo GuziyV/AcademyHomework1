@@ -14,16 +14,29 @@ namespace AcademyHomework1
 
         static public void FirstTask()
         {
-            foreach (var post in s.GetNumberOfCommentsById(11))
+            int userId = 11; //set user id here
+            foreach (var post in s.GetNumberOfCommentsById(userId))
             {
                 Console.WriteLine(post.Key);
                 Console.WriteLine("Number of comments: {0}", post.Value);
             }
         }
 
+        static public void SecondTask()
+        {
+            int userId = 17; //set user id here
+            foreach (var comment in s.GetCommentsWithBigBodyById(userId))
+            {
+                Console.WriteLine(comment);
+            }
+        }
+
         static void Main(string[] args)
         {
+            Console.WriteLine("first task:");
             FirstTask();
+            Console.WriteLine("second task: ");
+            SecondTask();
         }
     }
 }
