@@ -14,11 +14,6 @@ namespace AcademyHomework1
         public bool IsCompleted { get; set; }
         public int UserId { get; set; }
 
-        public string outputAsNode()
-        {
-            return "-" + this.ToString();
-        }
-
         public override string ToString()
         {
             return Id + " " + CreatedAt + " " + Name + " " + IsCompleted + " " + UserId;

@@ -13,15 +13,12 @@ namespace AcademyHomework1
         public string Name { get; set; }
         public string Avatar { get; set; }
         public string Email { get; set; }
-
-        public string outputAsNode()
-        {
-            return "-" + this.ToString();
-        }
+        public List<Post> Posts { get; set; }
+        public List<Todo> Todos { get; set; }
 
         public override string ToString()
         {
-            return Id + " " + CreatedAt + " " + Name + " " + Avatar + " " + Email;
+            return  Id + " " + CreatedAt + " " + Name + " " + Avatar + " " + Email + "\n";
         }
     }
 }

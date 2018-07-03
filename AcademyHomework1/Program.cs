@@ -10,17 +10,20 @@ namespace AcademyHomework1
 {
     class Program
     {
-        /*
-        static List<User> getAllUsers()
+        static Service s = new Service();
+
+        static public void FirstTask()
         {
-            HttpClient client = new HttpClient();
-            string usersJson =  client.GetStringAsync("https://5b128555d50a5c0014ef1204.mockapi.io/users").Result;
-            List<User> allUsers = JsonConvert.DeserializeObject<List<User>>(usersJson);
-            return allUsers;
-        }  */
+            foreach (var post in s.GetNumberOfCommentsById(11))
+            {
+                Console.WriteLine(post.Key);
+                Console.WriteLine("Number of comments: {0}", post.Value);
+            }
+        }
+
         static void Main(string[] args)
         {
-            
+            FirstTask();
         }
     }
 }

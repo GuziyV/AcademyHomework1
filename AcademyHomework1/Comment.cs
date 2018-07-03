@@ -15,11 +15,6 @@ namespace AcademyHomework1
         public int PostId { get; set; }
         public int Likes { get; set; }
 
-        public string outputAsNode()
-        {
-            return "------" + this.ToString();
-        }
-
         public override string ToString()
         {
             return Id + " " + CreatedAt + " " + Body + " " + UserId + " " + PostId + " " + Likes;
