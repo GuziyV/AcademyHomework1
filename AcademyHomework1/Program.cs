@@ -14,20 +14,29 @@ namespace AcademyHomework1
 
         static public void FirstTask()
         {
-            int userId = 11; //set user id here
+            int userId = 12; //set user id here
             foreach (var post in s.GetNumberOfCommentsById(userId))
             {
-                Console.WriteLine(post.Key);
-                Console.WriteLine("Number of comments: {0}", post.Value);
+                Console.WriteLine(post.Item1);
+                Console.WriteLine("Number of comments: {0}", post.Item2);
             }
         }
 
         static public void SecondTask()
         {
-            int userId = 17; //set user id here
-            foreach (var comment in s.GetCommentsWithBigBodyById(userId))
+            int userId = 21; //set user id here
+            foreach (var comment in s.GetCommentsWithSmallBodyById(userId))
             {
                 Console.WriteLine(comment);
+            }
+        }
+
+        static public void ThirdTask()
+        {
+            int userId = 45; //set user id here
+            foreach (var todo in s.GetCompletedTasksById(userId))
+            {
+                Console.WriteLine("Id: {0}, name:{1}", todo.Item1, todo.Item2);
             }
         }
 
@@ -35,8 +44,10 @@ namespace AcademyHomework1
         {
             Console.WriteLine("first task:");
             FirstTask();
-            Console.WriteLine("second task: ");
+            Console.WriteLine("\nsecond task: ");
             SecondTask();
+            Console.WriteLine("\nthird task:");
+            ThirdTask();
         }
     }
 }

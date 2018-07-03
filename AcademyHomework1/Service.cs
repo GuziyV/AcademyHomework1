@@ -40,7 +40,7 @@ namespace AcademyHomework1
                                             postJoinComments,
                                             user => (int)user["id"],
                                             post => post.UserId,
-                                            (user, posts) => new User
+                                            (user, posts) => new
                                             {
                                                 Id = (int)user["id"],
                                                 CreatedAt = (DateTime)user["createdAt"],
@@ -50,8 +50,23 @@ namespace AcademyHomework1
                                                 Posts = posts.ToList()
                                             });
 
+                var usersJoinTodo = usersJoinPosts.GroupJoin(
+                                            _JArrayTodos,
+                                            user => user.Id,
+                                            todo => (int)todo["userId"],
+                                            (user, todos) => new User
+                                            {
+                                                Id = user.Id,
+                                                CreatedAt = user.CreatedAt,
+                                                Name = user.Name,
+                                                Avatar = user.Avatar,
+                                                Email = user.Email,
+                                                Posts = user.Posts,
+                                                Todos = new JArray(todos).ToObject<List<Todo>>().ToList()
+                                            });
 
-                return usersJoinPosts.ToList();
+
+                return usersJoinTodo.ToList();
 
             }
         }
@@ -70,7 +85,7 @@ namespace AcademyHomework1
             get
             {
                 string json = _client.GetStringAsync("https://5b128555d50a5c0014ef1204.mockapi.io/todos").Result;
-                return JArray.Parse(json);;
+                return JArray.Parse(json);
             }
         }
 
@@ -100,39 +115,42 @@ namespace AcademyHomework1
             return posts;
         }
 
-        public Dictionary<Post, int> GetNumberOfCommentsById(int id)
+        public IEnumerable<(Post, int)> GetNumberOfCommentsById(int id)
         {
             var posts = GetPostsById(id);
 
             var postsWithNumber = from p in posts
-                                  select new
-                                  {
-                                      Post = p,
-                                      Number = p.Comments.Count()
-                                  };
-            Dictionary<Post, int> res = new Dictionary<Post, int>();
-            foreach(var p in postsWithNumber)
-            {
-                res[p.Post] = p.Number;
-            }
-            return res;
+                                  select (Post: p, Number: p.Comments.Count());
+
+            return postsWithNumber;
         }
 
-        public List<Comment> GetCommentsWithBigBodyById(int id)
+        public IEnumerable<Comment> GetCommentsWithSmallBodyById(int id)
         {
             var posts = GetPostsById(id);
 
-            List<Comment> allComments = new List<Comment>();
-
+            var allComments = new List<Comment>();
+            
             foreach(var post in posts)
             {
                 allComments.AddRange(post.Comments);
             }
 
             var smallComments = allComments.Where(c => c.Body.Length < 50);
-            return smallComments.ToList();
+            return smallComments;
+        }
+        public IEnumerable<(int, string)> GetCompletedTasksById(int id)
+        {
+            var todos = (from u in _users
+                        where u.Id == id
+                         select u.Todos).First();
 
-                               
+
+            var completed = from todo in todos
+                            where todo.IsComplete == true
+                            select (Id: todo.Id, Name: todo.Name);
+
+            return completed;
         }
     }
 }
