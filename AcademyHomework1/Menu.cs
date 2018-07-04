@@ -41,7 +41,7 @@ namespace AcademyHomework1
 
         static private void FirstTask()
         {
-            Console.WriteLine("enter user id: "); //12
+            Console.WriteLine("enter user id: "); 
             int userId = Int32.Parse(Console.ReadLine());
             foreach (var post in _service.GetNumberOfCommentsById(userId))
             {
@@ -52,7 +52,7 @@ namespace AcademyHomework1
 
         static private void SecondTask()
         {
-            Console.WriteLine("enter user id: "); //21
+            Console.WriteLine("enter user id: "); 
             int userId = Int32.Parse(Console.ReadLine());
             foreach (var comment in _service.GetCommentsWithSmallBodyById(userId))
             {
@@ -62,7 +62,7 @@ namespace AcademyHomework1
 
         static private void ThirdTask()
         {
-            Console.WriteLine("enter user id: "); //45
+            Console.WriteLine("enter user id: "); 
             int userId = Int32.Parse(Console.ReadLine());
             foreach (var todo in _service.GetCompletedTasksById(userId))
             {
@@ -82,7 +82,7 @@ namespace AcademyHomework1
         
         static private void FifthTask()
         {
-            Console.WriteLine("enter user id: "); //24
+            Console.WriteLine("enter user id: "); 
             int userId = Int32.Parse(Console.ReadLine());
             var structure = _service.GetFirstStructure(userId);
             Console.WriteLine("User: ");
@@ -101,7 +101,7 @@ namespace AcademyHomework1
 
         static private void SixthTask()
         {
-            Console.WriteLine("enter post id: "); //45
+            Console.WriteLine("enter post id: "); 
             int userId = Int32.Parse(Console.ReadLine());
             var structure = _service.GetSecondStructure(userId);
             Console.WriteLine("Post: ");
