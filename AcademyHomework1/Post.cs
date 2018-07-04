@@ -14,7 +14,7 @@ namespace AcademyHomework1
         public string Body { get; set; }
         public int UserId { get; set; }
         public int Likes { get; set; }
-        public List<Comment> Comments { get; set; }
+        public List<Comment> Comments { get; set; } 
 
         public override string ToString()
         {

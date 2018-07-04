@@ -50,6 +50,7 @@
   <ItemGroup>
     <Compile Include="Address.cs" />
     <Compile Include="Comment.cs" />
+    <Compile Include="Menu.cs" />
     <Compile Include="Post.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

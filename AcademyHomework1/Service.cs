@@ -14,26 +14,26 @@ namespace AcademyHomework1
         private HttpClient _client = new HttpClient();
 
 
-        public List<User> _users
+        public IEnumerable<User> _users
         {
             get
             {
                 string json = _client.GetStringAsync("https://5b128555d50a5c0014ef1204.mockapi.io/users").Result;
                 JArray _JArrayUsers = JArray.Parse(json);
                 var postJoinComments = _JArrayPosts.GroupJoin(
-                                                _JArrayComments,
-                                                post => (int)post["id"],
-                                                comment => (int)comment["postId"],
-                                                (post, comments) => new Post
-                                                {
-                                                    Id = (int)post["id"],
-                                                    CreatedAt = (DateTime)post["createdAt"],
-                                                    Title = (string)post["title"],
-                                                    Body = (string)post["body"],
-                                                    Likes = (int)post["likes"],
-                                                    UserId = (int)post["userId"],
-                                                    Comments = new JArray(comments).ToObject<List<Comment>>().ToList()
-                                                });
+                                            _JArrayComments,
+                                            post => (int)post["id"],
+                                            comment => (int)comment["postId"],
+                                            (post, comments) => new Post
+                                            {
+                                                Id = (int)post["id"],
+                                                CreatedAt = (DateTime)post["createdAt"],
+                                                Title = (string)post["title"],
+                                                Body = (string)post["body"],
+                                                Likes = (int)post["likes"],
+                                                UserId = (int)post["userId"],
+                                                Comments = new JArray(comments).ToObject<List<Comment>>().ToList()
+                                            });
 
 
                 var usersJoinPosts = _JArrayUsers.GroupJoin(
@@ -64,10 +64,7 @@ namespace AcademyHomework1
                                                 Posts = user.Posts,
                                                 Todos = new JArray(todos).ToObject<List<Todo>>().ToList()
                                             });
-
-
-                return usersJoinTodo.ToList();
-
+                return usersJoinTodo;
             }
         }
 
@@ -98,12 +95,12 @@ namespace AcademyHomework1
             }
         }
 
-        private List<Address> _addresses
+        private IEnumerable<Address> _addresses
         {
             get
             {
                 string json = _client.GetStringAsync("https://5b128555d50a5c0014ef1204.mockapi.io/address").Result;
-                return JsonConvert.DeserializeObject<List<Address>>(json);
+                return JsonConvert.DeserializeObject<IEnumerable<Address>>(json);
             }
         }
 
@@ -151,6 +148,55 @@ namespace AcademyHomework1
                             select (Id: todo.Id, Name: todo.Name);
 
             return completed;
+        }
+
+        public IEnumerable<User> GetSortedUsers() //NOT WORKING
+        {
+            var sortedUsers = from user in _users
+                              orderby user.Name
+                              select user;
+
+            /*
+            var sortedTodos = from user in sortedUsers //NOT WORKING
+                               from todo in user.Todos
+                               orderby todo.Name.Length descending
+                               select user;
+            */
+
+            // var sortedUsers = _users.OrderBy(u => u.Name);
+            foreach(var user in sortedUsers)
+            {
+                 user.Todos.Sort((u, v)=> u.Name.Length - (v.Name.Length));
+            }
+
+            return sortedUsers;
+        }
+
+        public (User, Post, int?, int, Post, Post) GetFirstStructure(int id)
+        {
+            var user = _users.Where(u => u.Id == id).First();
+
+            var lastPost = user.Posts.OrderByDescending(p => p.CreatedAt).FirstOrDefault();
+
+            int? numberOfComments = lastPost?.Comments.Count();
+
+            var numberOfNotDone = user.Todos.Where(todo => todo.IsComplete == false).Count();
+
+            if (lastPost == null)
+            {
+                Post mostPopularComments = null;
+                Post mostPopularLikes = null;
+
+                return (user, lastPost, numberOfComments, numberOfNotDone, mostPopularComments, mostPopularLikes);
+            }
+            else
+            {
+                var mostPopularComments = user?.Posts.
+                    OrderByDescending(post => post.Comments.Where(comment => comment.Body.Length > 80).Count()).First();
+
+                var mostPopularLikes = user?.Posts.OrderByDescending(post => post.Likes).First();
+                return (user, lastPost, numberOfComments, numberOfNotDone, mostPopularComments, mostPopularLikes);
+            }
         }
     }
 }
