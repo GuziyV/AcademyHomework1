@@ -23,33 +23,33 @@ namespace AcademyHomework1
                 var postsWithComments = GetAllPosts();
 
                 var usersJoinPosts = _JArrayUsers.GroupJoin(
-                                            postsWithComments,
-                                            user => (int)user["id"],
-                                            post => post.UserId,
-                                            (user, posts) => new
-                                            {
-                                                Id = (int)user["id"],
-                                                CreatedAt = (DateTime)user["createdAt"],
-                                                Name = (string)user["name"],
-                                                Avatar = (string)user["avatar"],
-                                                Email = (string)user["email"],
-                                                Posts = posts.ToList()
-                                            });
+                    postsWithComments,
+                    user => (int)user["id"],
+                    post => post.UserId,
+                    (user, posts) => new
+                    {
+                        Id = (int)user["id"],
+                        CreatedAt = (DateTime)user["createdAt"],
+                        Name = (string)user["name"],
+                        Avatar = (string)user["avatar"],
+                        Email = (string)user["email"],
+                        Posts = posts.ToList()
+                    });
 
                 var usersJoinTodo = usersJoinPosts.GroupJoin(
-                                            _JArrayTodos,
-                                            user => user.Id,
-                                            todo => (int)todo["userId"],
-                                            (user, todos) => new User
-                                            {
-                                                Id = user.Id,
-                                                CreatedAt = user.CreatedAt,
-                                                Name = user.Name,
-                                                Avatar = user.Avatar,
-                                                Email = user.Email,
-                                                Posts = user.Posts,
-                                                Todos = new JArray(todos).ToObject<List<Todo>>().ToList()
-                                            });
+                    _JArrayTodos,
+                    user => user.Id,
+                    todo => (int)todo["userId"],
+                    (user, todos) => new User
+                    {
+                        Id = user.Id,
+                        CreatedAt = user.CreatedAt,
+                        Name = user.Name,
+                        Avatar = user.Avatar,
+                        Email = user.Email,
+                        Posts = user.Posts,
+                        Todos = new JArray(todos).ToObject<List<Todo>>().ToList()
+                    });
                 return usersJoinTodo;
             }
         }
@@ -57,18 +57,18 @@ namespace AcademyHomework1
         private IEnumerable<Post> GetAllPosts()
         {
             var postJoinComments = _JArrayPosts.GroupJoin(
-                            _JArrayComments,
-                            post => (int)post["id"],
-                            comment => (int)comment["postId"],
-                            (post, comments) => new Post
-                            {
-                                Id = (int)post["id"],
-                                CreatedAt = (DateTime)post["createdAt"],
-                                Title = (string)post["title"],
-                                Body = (string)post["body"],
-                                Likes = (int)post["likes"],
-                                UserId = (int)post["userId"],
-                                Comments = new JArray(comments).ToObject<List<Comment>>().ToList()
+                _JArrayComments,
+                post => (int)post["id"],
+                comment => (int)comment["postId"],
+                (post, comments) => new Post
+                {
+                    Id = (int)post["id"],
+                    CreatedAt = (DateTime)post["createdAt"],
+                    Title = (string)post["title"],
+                    Body = (string)post["body"],
+                    Likes = (int)post["likes"],
+                    UserId = (int)post["userId"],
+                    Comments = new JArray(comments).ToObject<List<Comment>>().ToList()
                             });
             return postJoinComments;
         }
@@ -131,14 +131,9 @@ namespace AcademyHomework1
         {
             var posts = GetPostsById(id);
 
-            var allComments = new List<Comment>();
-            
-            foreach(var post in posts)
-            {
-                allComments.AddRange(post.Comments);
-            }
+            var smallComments = posts.SelectMany(post => post.Comments).Where(comment => comment.Body.Length < 50);
 
-            var smallComments = allComments.Where(c => c.Body.Length < 50);
+           // var smallComments = allComments.Where(c => c.Body.Length < 50);
             return smallComments;
         }
         public IEnumerable<(int, string)> GetCompletedTasksById(int id)
@@ -157,9 +152,21 @@ namespace AcademyHomework1
 
         public IEnumerable<User> GetSortedUsers() //NOT WORKING
         {
-            var sortedUsers = from user in _users
-                              orderby user.Name
-                              select user;
+            var sortedUsers = _users.GroupJoin(_users.SelectMany(u => u.Todos)
+                .OrderByDescending(todo => todo.Name.Length),
+                user => user.Id, todo => todo.UserId,
+                (user, todos) => new User
+                {
+                    Id = user.Id,
+                    CreatedAt = user.CreatedAt,
+                    Avatar = user.Avatar,
+                    Email = user.Email,
+                    Name = user.Name,
+                    Posts = user.Posts,
+                    Todos = todos.ToList(),
+                    
+                }).OrderBy(user => user.Name);
+            //var todos = sortedUsers.SelectMany(user => user.Todos).OrderBy(todo => todo.Name.Length);
 
             /*
             var sortedTodos = from user in sortedUsers //NOT WORKING
@@ -169,11 +176,11 @@ namespace AcademyHomework1
             */
 
             // var sortedUsers = _users.OrderBy(u => u.Name);
-            foreach(var user in sortedUsers)
+            /*foreach(var user in sortedUsers)
             {
                  user.Todos.Sort((u, v)=> u.Name.Length - (v.Name.Length));
             }
-
+            */
             return sortedUsers;
         }
 
