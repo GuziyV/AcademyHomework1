@@ -20,24 +20,10 @@ namespace AcademyHomework1
             {
                 string json = _client.GetStringAsync("https://5b128555d50a5c0014ef1204.mockapi.io/users").Result;
                 JArray _JArrayUsers = JArray.Parse(json);
-                var postJoinComments = _JArrayPosts.GroupJoin(
-                                            _JArrayComments,
-                                            post => (int)post["id"],
-                                            comment => (int)comment["postId"],
-                                            (post, comments) => new Post
-                                            {
-                                                Id = (int)post["id"],
-                                                CreatedAt = (DateTime)post["createdAt"],
-                                                Title = (string)post["title"],
-                                                Body = (string)post["body"],
-                                                Likes = (int)post["likes"],
-                                                UserId = (int)post["userId"],
-                                                Comments = new JArray(comments).ToObject<List<Comment>>().ToList()
-                                            });
-
+                var postsWithComments = GetAllPosts();
 
                 var usersJoinPosts = _JArrayUsers.GroupJoin(
-                                            postJoinComments,
+                                            postsWithComments,
                                             user => (int)user["id"],
                                             post => post.UserId,
                                             (user, posts) => new
@@ -66,6 +52,25 @@ namespace AcademyHomework1
                                             });
                 return usersJoinTodo;
             }
+        }
+
+        private IEnumerable<Post> GetAllPosts()
+        {
+            var postJoinComments = _JArrayPosts.GroupJoin(
+                            _JArrayComments,
+                            post => (int)post["id"],
+                            comment => (int)comment["postId"],
+                            (post, comments) => new Post
+                            {
+                                Id = (int)post["id"],
+                                CreatedAt = (DateTime)post["createdAt"],
+                                Title = (string)post["title"],
+                                Body = (string)post["body"],
+                                Likes = (int)post["likes"],
+                                UserId = (int)post["userId"],
+                                Comments = new JArray(comments).ToObject<List<Comment>>().ToList()
+                            });
+            return postJoinComments;
         }
 
         private JArray _JArrayPosts
@@ -180,7 +185,7 @@ namespace AcademyHomework1
 
             int? numberOfComments = lastPost?.Comments.Count();
 
-            var numberOfNotDone = user.Todos.Where(todo => todo.IsComplete == false).Count();
+            int numberOfNotDone = user.Todos.Where(todo => todo.IsComplete == false).Count();
 
             if (lastPost == null)
             {
@@ -197,6 +202,21 @@ namespace AcademyHomework1
                 var mostPopularLikes = user?.Posts.OrderByDescending(post => post.Likes).First();
                 return (user, lastPost, numberOfComments, numberOfNotDone, mostPopularComments, mostPopularLikes);
             }
+        }
+
+        public (Post, Comment, Comment, int?) GetSecondStructure(int id)
+        {
+            var post = GetAllPosts().Where(p => p.Id == id).First();
+
+            var theLongestComment = post.Comments.OrderByDescending(comment => comment.Body.Length).First();
+
+            var theLikestComment = post.Comments.OrderByDescending(comment => comment.Likes).First();
+
+            int? numberOfComments = post?.Comments.Where(comment => (comment.Likes == 0 || comment.Body.Length > 80))
+                .Count();
+
+            return (post, theLongestComment, theLikestComment, numberOfComments);
+                
         }
     }
 }

@@ -17,7 +17,8 @@ namespace AcademyHomework1
 
         public override string ToString()
         {
-            return Id + " " + CreatedAt + " " + Body + " " + UserId + " " + PostId + " " + Likes;
+            return "COMMENT: Id" + Id + ", Date: " + CreatedAt + ", Body: " + Body + ", UserId:" + UserId + 
+                ", PostId: " + PostId + ", Likes: " + Likes;
         }
     }
 }

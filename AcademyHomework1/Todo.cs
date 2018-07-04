@@ -16,7 +16,7 @@ namespace AcademyHomework1
 
         public override string ToString()
         {
-            return Id + " " + CreatedAt + " " + Name + " " + IsComplete + " " + UserId;
+            return "TODO: Id: " + Id + ", Date: " + CreatedAt + ", Name: " + Name + ", IsDone:" + IsComplete + ", " + UserId;
         }
     }
 }
