@@ -26,7 +26,7 @@ namespace AcademyHomework1
 
         public override string ToString()
         {
-            return  "USER: Id: " + Id + ", Date: " + CreatedAt + ", Name: " + Name + ", Avatar: " + Avatar + ", Email:" + Email;
+            return  "USER: Id: " + Id + ", Date: " + CreatedAt + ", Name: " + Name + ", Avatar: " + Avatar + ", Email: " + Email;
         }
     }
 }

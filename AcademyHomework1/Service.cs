@@ -13,7 +13,6 @@ namespace AcademyHomework1
     {
         private HttpClient _client = new HttpClient();
 
-
         public IEnumerable<User> _users
         {
             get
@@ -69,7 +68,7 @@ namespace AcademyHomework1
                     Likes = (int)post["likes"],
                     UserId = (int)post["userId"],
                     Comments = new JArray(comments).ToObject<List<Comment>>().ToList()
-                            });
+                });
             return postJoinComments;
         }
 
@@ -100,15 +99,6 @@ namespace AcademyHomework1
             }
         }
 
-        private IEnumerable<Address> _addresses
-        {
-            get
-            {
-                string json = _client.GetStringAsync("https://5b128555d50a5c0014ef1204.mockapi.io/address").Result;
-                return JsonConvert.DeserializeObject<IEnumerable<Address>>(json);
-            }
-        }
-
         private IEnumerable<Post> GetPostsById(int id)
         {
             var posts = (from u in _users
@@ -133,7 +123,6 @@ namespace AcademyHomework1
 
             var smallComments = posts.SelectMany(post => post.Comments).Where(comment => comment.Body.Length < 50);
 
-           // var smallComments = allComments.Where(c => c.Body.Length < 50);
             return smallComments;
         }
         public IEnumerable<(int, string)> GetCompletedTasksById(int id)
@@ -150,7 +139,7 @@ namespace AcademyHomework1
             return completed;
         }
 
-        public IEnumerable<User> GetSortedUsers() //NOT WORKING
+        public IEnumerable<User> GetSortedUsers()
         {
             var sortedUsers = _users.GroupJoin(_users.SelectMany(u => u.Todos)
                 .OrderByDescending(todo => todo.Name.Length),
@@ -166,21 +155,6 @@ namespace AcademyHomework1
                     Todos = todos.ToList(),
                     
                 }).OrderBy(user => user.Name);
-            //var todos = sortedUsers.SelectMany(user => user.Todos).OrderBy(todo => todo.Name.Length);
-
-            /*
-            var sortedTodos = from user in sortedUsers //NOT WORKING
-                               from todo in user.Todos
-                               orderby todo.Name.Length descending
-                               select user;
-            */
-
-            // var sortedUsers = _users.OrderBy(u => u.Name);
-            /*foreach(var user in sortedUsers)
-            {
-                 user.Todos.Sort((u, v)=> u.Name.Length - (v.Name.Length));
-            }
-            */
             return sortedUsers;
         }
 
@@ -203,17 +177,17 @@ namespace AcademyHomework1
             }
             else
             {
-                var mostPopularComments = user?.Posts.
+                var mostPopularComments = user.Posts.
                     OrderByDescending(post => post.Comments.Where(comment => comment.Body.Length > 80).Count()).First();
 
-                var mostPopularLikes = user?.Posts.OrderByDescending(post => post.Likes).First();
+                var mostPopularLikes = user.Posts.OrderByDescending(post => post.Likes).First();
                 return (user, lastPost, numberOfComments, numberOfNotDone, mostPopularComments, mostPopularLikes);
             }
         }
 
         public (Post, Comment, Comment, int?) GetSecondStructure(int id)
         {
-            var post = GetAllPosts().Where(p => p.Id == id).First();
+            var post = _users.SelectMany(u => u.Posts).Where(p => p.Id == id).First();
 
             var theLongestComment = post.Comments.OrderByDescending(comment => comment.Body.Length).First();
 
