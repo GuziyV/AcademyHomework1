@@ -13,15 +13,20 @@ namespace AcademyHomework1
         public string Name { get; set; }
         public string Avatar { get; set; }
         public string Email { get; set; }
+        public List<Post> Posts { get; set; } 
+        public List<Todo> Todos { get; set; } 
 
-        public string outputAsNode()
+        public void ShowTodos()
         {
-            return "-" + this.ToString();
+            foreach(var todo in Todos)
+            {
+                Console.WriteLine("TODO: {0}", todo.Name);
+            }
         }
 
         public override string ToString()
         {
-            return Id + " " + CreatedAt + " " + Name + " " + Avatar + " " + Email;
+            return  "USER: Id: " + Id + ", Date: " + CreatedAt + ", Name: " + Name + ", Avatar: " + Avatar + ", Email:" + Email;
         }
     }
 }

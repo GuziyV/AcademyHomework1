@@ -11,17 +11,12 @@ namespace AcademyHomework1
         public int Id { get; set; }
         public DateTime CreatedAt { get; set; }
         public string Name { get; set; }
-        public bool IsCompleted { get; set; }
+        public bool IsComplete { get; set; }
         public int UserId { get; set; }
-
-        public string outputAsNode()
-        {
-            return "-" + this.ToString();
-        }
 
         public override string ToString()
         {
-            return Id + " " + CreatedAt + " " + Name + " " + IsCompleted + " " + UserId;
+            return "TODO: Id: " + Id + ", Date: " + CreatedAt + ", Name: " + Name + ", IsDone:" + IsComplete + ", " + UserId;
         }
     }
 }
