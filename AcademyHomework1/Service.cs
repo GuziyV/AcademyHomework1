@@ -11,7 +11,7 @@ namespace AcademyHomework1
     {
         private HttpClient _client = new HttpClient();
 
-        static public List<User> Users;
+        static private List<User> _users;
 
         public Service()
         {
@@ -47,7 +47,7 @@ namespace AcademyHomework1
                     Posts = user.Posts,
                     Todos = new JArray(todos).ToObject<List<Todo>>().ToList()
                 });
-            Users = usersJoinTodo.ToList();
+            _users = usersJoinTodo.ToList();
         }
 
         private IEnumerable<Post> GetAllPosts()
@@ -98,7 +98,7 @@ namespace AcademyHomework1
 
         private IEnumerable<Post> GetPostsById(int id)
         {
-            var posts = (from u in Users
+            var posts = (from u in _users
                          where u.Id == id
                          select u.Posts).First();
             return posts;
@@ -124,7 +124,7 @@ namespace AcademyHomework1
         }
         public IEnumerable<(int, string)> GetCompletedTasksById(int id)
         {
-            var todos = (from u in Users
+            var todos = (from u in _users
                          where u.Id == id
                          select u.Todos).First();
 
@@ -138,7 +138,7 @@ namespace AcademyHomework1
 
         public IEnumerable<User> GetSortedUsers()
         {
-            var sortedUsers = Users.GroupJoin(Users.SelectMany(u => u.Todos)
+            var sortedUsers = _users.GroupJoin(_users.SelectMany(u => u.Todos)
                 .OrderByDescending(todo => todo.Name.Length),
                 user => user.Id, todo => todo.UserId,
                 (user, todos) => new User
@@ -157,7 +157,7 @@ namespace AcademyHomework1
 
         public (User, Post, int?, int, Post, Post) GetFirstStructure(int id)
         {
-            var user = Users.Where(u => u.Id == id).First();
+            var user = _users.Where(u => u.Id == id).First();
 
             var lastPost = user.Posts.OrderByDescending(p => p.CreatedAt).FirstOrDefault();
 
@@ -184,7 +184,7 @@ namespace AcademyHomework1
 
         public (Post, Comment, Comment, int?) GetSecondStructure(int id)
         {
-            var post = Users.SelectMany(u => u.Posts).Where(p => p.Id == id).First();
+            var post = _users.SelectMany(u => u.Posts).Where(p => p.Id == id).First();
 
             var theLongestComment = post.Comments.OrderByDescending(comment => comment.Body.Length).First();
 
