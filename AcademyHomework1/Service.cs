@@ -13,7 +13,7 @@ namespace AcademyHomework1
     {
         private HttpClient _client = new HttpClient();
 
-        public IEnumerable<User> _users
+        private IEnumerable<User> _users
         {
             get
             {
